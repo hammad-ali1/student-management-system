@@ -82,7 +82,7 @@ public class StudentsController{
         try{
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
             Statement stmt=con.createStatement();
-            String query = String.format("DELETE FROM section WHERE name = '%s' ", deleteStudent.getRegNo());
+            String query = String.format("DELETE FROM students WHERE regNo = '%s' ", deleteStudent.getRegNo());
             stmt.execute(query);
         }catch(SQLException e){
             e.printStackTrace();

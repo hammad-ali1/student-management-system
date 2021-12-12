@@ -9,6 +9,14 @@
             "name": "Launch Main",
             "request": "launch",
             "mainClass": "Main",
+            "projectName": "student-management-system_76e9df96",
+            "vmArgs": "--module-path \"C:\\Program Files\\Java\\javafx-sdk-17.0.0.1\\lib\" --add-modules javafx.controls,javafx.fxml"
+        },
+        {
+            "type": "java",
+            "name": "Launch Main",
+            "request": "launch",
+            "mainClass": "Main",
             "projectName": "Student Management System_97794662",
             "vmArgs": "--module-path \"C:\\Program Files\\Java\\javafx-sdk-17.0.0.1\\lib\" --add-modules javafx.controls,javafx.fxml"
         },
