@@ -8,6 +8,8 @@ import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.Parent;
 import javafx.fxml.FXMLLoader;
+import java.sql.*;
+import javafx.scene.control.Alert.AlertType;
 
 public class SectionsController {
     static{
@@ -15,8 +17,24 @@ public class SectionsController {
     }
     //method to populate observable list with dummy values
     public static void populateSectionsList(ObservableList<Section> list){
-        list.add(new Section("FA20-BCS-A", "CSC 101", "MTH 101", "MTH 302", "PHY 202"));
-        list.add(new Section("FA20-BCS-B", "CSC 101", "MTH 101", "MTH 302", "PHY 202"));
+        try{
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
+            Statement stmt=con.createStatement();
+            String query = "SELECT name, course1, course2, course3, course4 FROM section";
+            ResultSet result = stmt.executeQuery(query);
+            ResultSetMetaData data = result.getMetaData();
+            int columns = data.getColumnCount();
+            while(result.next()){
+                String name = (String) result.getObject(1);
+                String course1 = (String) result.getObject(2);
+                String course2 = (String) result.getObject(3);
+                String course3 = (String) result.getObject(4);
+                String course4 = (String) result.getObject(5);
+                list.add(new Section(name, course1, course2, course3, course4));
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
     }
     @FXML
     private TableColumn<Section, String> course1Column;
@@ -43,13 +61,42 @@ public class SectionsController {
     @FXML
     //event handler for adding a new section
     void addSectionButtonPressed(ActionEvent event) {
-        Section newSection = new Section(sectionTextField.getText(), course1TextField.getText(), 
-                course2TextField.getText(), course3TextField.getText(), course4TextField.getText());
+        String name = sectionTextField.getText();
+        String course1 = course1TextField.getText();
+        String course2 = course2TextField.getText();
+        String course3 = course3TextField.getText();
+        String course4 = course4TextField.getText();
+        Section newSection = new Section(name, course1, course2, course3, course4);
+        try{
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
+            Statement stmt=con.createStatement();
+            String query = String.format("INSERT INTO section (name, course1, course2, course3, course4) VALUES ('%s', '%s', '%s', '%s', '%s')", name, course1, course2, course3, course4);
+            stmt.execute(query);
+        }catch(SQLException e){
+            e.printStackTrace();
+            Alert errorAlert = new Alert(AlertType.ERROR);
+            errorAlert.setHeaderText("Cannot Add Record");
+            errorAlert.setContentText("Invalid Input");
+            errorAlert.showAndWait();
+            return;
+        }
         Main.sectionList.add(newSection);
     }
     @FXML //event handler for deleting a record of section
     void deleteRecordButtonPressed(ActionEvent event) {
         Section deleteSection = sectionsTable.getSelectionModel().getSelectedItem();
+        try{
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
+            Statement stmt=con.createStatement();
+            String query = String.format("DELETE FROM section WHERE name = '%s' ", deleteSection.getName());
+            stmt.execute(query);
+        }catch(SQLException e){
+            e.printStackTrace();
+            Alert errorAlert = new Alert(AlertType.ERROR);
+            errorAlert.setHeaderText("Cannot Delete Record");
+            errorAlert.showAndWait();
+            return;
+        }
         sectionsTable.getItems().remove(deleteSection);
     }
     @FXML

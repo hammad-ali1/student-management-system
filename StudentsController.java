@@ -8,6 +8,8 @@ import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.Parent;
 import javafx.fxml.FXMLLoader;
+import java.sql.*;
+import javafx.scene.control.Alert.AlertType;
 
 public class StudentsController{
     static {
@@ -16,10 +18,23 @@ public class StudentsController{
     }
     //method to populate observable list with dummy values
     public static void populateStudentsList(ObservableList<Student> list){
-        list.add(new Student("FA20-BCS-087", "Hammad Ali", "FA20-BCS-A", "4.0"));
-        list.add(new Student("FA20-BCS-001", "Hassan Abdullah", "FA20-BCS-A", "3.8"));
-        list.add(new Student("FA20-BCS-004", "Hamid Ali", "FA20-BCS-A", "3.5"));
-        list.add(new Student("FA20-BCS-009", "Muhammad Ahmed", "FA20-BCS-A", "2.7"));
+        try{
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
+            Statement stmt=con.createStatement();
+            String query = "SELECT regNo, name, section, gpa FROM students";
+            ResultSet result = stmt.executeQuery(query);
+            ResultSetMetaData data = result.getMetaData();
+            int columns = data.getColumnCount();
+            while(result.next()){
+                String regNo = (String) result.getObject(1);
+                String name = (String) result.getObject(2);
+                String section = (String) result.getObject(3);
+                String gpa = (String) result.getObject(4);
+                list.add(new Student(regNo, name, section, gpa));
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
     }
     @FXML
     private TableView<Student> studentTable;
@@ -41,13 +56,41 @@ public class StudentsController{
     private TextField sectionTextField;
     @FXML //event handler for adding a new student
     void addStudentButtonPressed(ActionEvent event) {
-        Student newStudent = new Student(regNoTextField.getText(), nameTextField.getText(),
-                     sectionTextField.getText(), gpaTextField.getText());
+        String regNo = regNoTextField.getText();
+        String name = nameTextField.getText();
+        String section = sectionTextField.getText();
+        String gpa = gpaTextField.getText();
+        Student newStudent = new Student(regNo, name, section, gpa);
+        try{
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
+            Statement stmt=con.createStatement();
+            String query = String.format("INSERT INTO students (regNo, name, section, gpa) VALUES ('%s', '%s', '%s', '%s')", regNo, name, section, gpa);
+            stmt.execute(query);
+        }catch(SQLException e){
+            e.printStackTrace();
+            Alert errorAlert = new Alert(AlertType.ERROR);
+            errorAlert.setHeaderText("Cannot Add Record");
+            errorAlert.setContentText("Invalid Input");
+            errorAlert.showAndWait();
+            return;
+        }
         Main.studentList.add(newStudent);
     }
     @FXML //event handler for deleting a record of student
     void deleteRecordButtonPressed(ActionEvent event) {
         Student deleteStudent = studentTable.getSelectionModel().getSelectedItem();
+        try{
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
+            Statement stmt=con.createStatement();
+            String query = String.format("DELETE FROM section WHERE name = '%s' ", deleteStudent.getRegNo());
+            stmt.execute(query);
+        }catch(SQLException e){
+            e.printStackTrace();
+            Alert errorAlert = new Alert(AlertType.ERROR);
+            errorAlert.setHeaderText("Cannot Delete Record");
+            errorAlert.showAndWait();
+            return;
+        }
         studentTable.getItems().remove(deleteStudent);
     }
     @FXML

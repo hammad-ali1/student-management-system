@@ -4,8 +4,9 @@ import javafx.scene.Scene;
 import javafx.scene.Parent;
 import javafx.fxml.FXMLLoader;
 import javafx.collections.*;
+import java.sql.*;
 
-public class Main extends Application{
+public class Main extends Application{    
     //observable list of students
     public static ObservableList<Student> studentList = FXCollections.observableArrayList();
     //observable list of courses
