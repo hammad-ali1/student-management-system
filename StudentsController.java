@@ -19,7 +19,7 @@ public class StudentsController{
     //method to populate observable list with dummy values
     public static void populateStudentsList(ObservableList<Student> list){
         try{
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
+            Connection con = DriverManager.getConnection("jdbc:mysql:mydb","root","root");
             Statement stmt=con.createStatement();
             String query = "SELECT regNo, name, section, gpa FROM students";
             ResultSet result = stmt.executeQuery(query);
@@ -62,7 +62,7 @@ public class StudentsController{
         String gpa = gpaTextField.getText();
         Student newStudent = new Student(regNo, name, section, gpa);
         try{
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
+            Connection con = DriverManager.getConnection("jdbc:sql:mydb","","");
             Statement stmt=con.createStatement();
             String query = String.format("INSERT INTO students (regNo, name, section, gpa) VALUES ('%s', '%s', '%s', '%s')", regNo, name, section, gpa);
             stmt.execute(query);
