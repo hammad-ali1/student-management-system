@@ -1,3 +1,4 @@
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
@@ -9,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.Parent;
 import javafx.fxml.FXMLLoader;
 import java.sql.*;
+
 import javafx.scene.control.Alert.AlertType;
 
 public class SectionsController {
@@ -22,8 +24,6 @@ public class SectionsController {
             Statement stmt=con.createStatement();
             String query = "SELECT name, course1, course2, course3, course4 FROM section";
             ResultSet result = stmt.executeQuery(query);
-            ResultSetMetaData data = result.getMetaData();
-            int columns = data.getColumnCount();
             while(result.next()){
                 String name = (String) result.getObject(1);
                 String course1 = (String) result.getObject(2);
@@ -39,19 +39,19 @@ public class SectionsController {
     @FXML
     private TableColumn<Section, String> course1Column;
     @FXML
-    private TextField course1TextField;
+    private ComboBox<String> course1ComboBox;
+    @FXML
+    private ComboBox<String> course2ComboBox;
+    @FXML
+    private ComboBox<String> course3ComboBox;
+    @FXML
+    private ComboBox<String> course4ComboBox;
     @FXML
     private TableColumn<Section, String> course2Column;
     @FXML
-    private TextField course2TextField;
-    @FXML
     private TableColumn<Section, String> course3Column;
     @FXML
-    private TextField course3TextField;
-    @FXML
     private TableColumn<Section, String> course4Column;
-    @FXML
-    private TextField course4TextField;
     @FXML
     private TableColumn<Section, String> sectionColumn;
     @FXML
@@ -62,10 +62,10 @@ public class SectionsController {
     //event handler for adding a new section
     void addSectionButtonPressed(ActionEvent event) {
         String name = sectionTextField.getText();
-        String course1 = course1TextField.getText();
-        String course2 = course2TextField.getText();
-        String course3 = course3TextField.getText();
-        String course4 = course4TextField.getText();
+        String course1 = course1ComboBox.getValue();
+        String course2 = course2ComboBox.getValue();
+        String course3 = course3ComboBox.getValue();
+        String course4 = course4ComboBox.getValue();
         Section newSection = new Section(name, course1, course2, course3, course4);
         try{
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
@@ -114,6 +114,27 @@ public class SectionsController {
         Scene currentScene = sectionsTable.getScene();
         currentScene.setRoot(newRoot);
      }
+    public ObservableList<String> getAvailableCourses(){
+        ObservableList<String> courses = FXCollections.observableArrayList();
+        try{
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
+            Statement stmt = con.createStatement();
+            String query = "SELECT code FROM courses";
+            ResultSet result = stmt.executeQuery(query);
+            ResultSetMetaData data = result.getMetaData();
+            while(result.next()){
+                String code = (String) result.getObject(1);
+                courses.add(code);
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+            Alert errorAlert = new Alert(AlertType.ERROR);
+            errorAlert.setHeaderText("Error in Getting Courses");
+            errorAlert.showAndWait();
+            return null;
+        }
+        return courses;
+    } 
     public void initialize(){
         sectionColumn.setCellValueFactory(new PropertyValueFactory<Section, String>("name"));
         course1Column.setCellValueFactory(new PropertyValueFactory<Section, String>("course1"));
@@ -122,5 +143,10 @@ public class SectionsController {
         course4Column.setCellValueFactory(new PropertyValueFactory<Section, String>("course4"));
         //adding list to table
         sectionsTable.setItems(Main.sectionList);
+        ObservableList<String> courses = getAvailableCourses();
+        course1ComboBox.setItems(courses);
+        course2ComboBox.setItems(courses);
+        course3ComboBox.setItems(courses);
+        course4ComboBox.setItems(courses);
     }
 }

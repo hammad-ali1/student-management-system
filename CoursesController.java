@@ -23,8 +23,6 @@ public class CoursesController {
             Statement stmt=con.createStatement();
             String query = "SELECT code, name FROM courses";
             ResultSet result = stmt.executeQuery(query);
-            ResultSetMetaData data = result.getMetaData();
-            int columns = data.getColumnCount();
             while(result.next()){
                 String code = (String) result.getObject(1);
                 String name = (String) result.getObject(2);

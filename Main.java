@@ -4,7 +4,6 @@ import javafx.scene.Scene;
 import javafx.scene.Parent;
 import javafx.fxml.FXMLLoader;
 import javafx.collections.*;
-import java.sql.*;
 
 public class Main extends Application{    
     //observable list of students

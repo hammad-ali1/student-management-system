@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.Parent;
 import javafx.fxml.FXMLLoader;
+import javafx.collections.FXCollections;
 import java.sql.*;
 import javafx.scene.control.Alert.AlertType;
 
@@ -19,12 +20,10 @@ public class StudentsController{
     //method to populate observable list with dummy values
     public static void populateStudentsList(ObservableList<Student> list){
         try{
-            Connection con = DriverManager.getConnection("jdbc:mysql:mydb","root","root");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
             Statement stmt=con.createStatement();
             String query = "SELECT regNo, name, section, gpa FROM students";
             ResultSet result = stmt.executeQuery(query);
-            ResultSetMetaData data = result.getMetaData();
-            int columns = data.getColumnCount();
             while(result.next()){
                 String regNo = (String) result.getObject(1);
                 String name = (String) result.getObject(2);
@@ -53,16 +52,16 @@ public class StudentsController{
     @FXML
     private TextField nameTextField;
     @FXML
-    private TextField sectionTextField;
+    private ComboBox<String> sectionComboBox;
     @FXML //event handler for adding a new student
     void addStudentButtonPressed(ActionEvent event) {
         String regNo = regNoTextField.getText();
         String name = nameTextField.getText();
-        String section = sectionTextField.getText();
+        String section = sectionComboBox.getValue();
         String gpa = gpaTextField.getText();
         Student newStudent = new Student(regNo, name, section, gpa);
         try{
-            Connection con = DriverManager.getConnection("jdbc:sql:mydb","","");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
             Statement stmt=con.createStatement();
             String query = String.format("INSERT INTO students (regNo, name, section, gpa) VALUES ('%s', '%s', '%s', '%s')", regNo, name, section, gpa);
             stmt.execute(query);
@@ -108,6 +107,26 @@ public class StudentsController{
        currentScene.setRoot(newRoot);
     }
 
+    public ObservableList<String> getAvailableSections(){
+        ObservableList<String> sections = FXCollections.observableArrayList();
+        try{
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
+            Statement stmt = con.createStatement();
+            String query = "SELECT name FROM section";
+            ResultSet result = stmt.executeQuery(query);
+            while(result.next()){
+                String section = (String) result.getObject(1);
+                sections.add(section);
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+            Alert errorAlert = new Alert(AlertType.ERROR);
+            errorAlert.setHeaderText("Error in Getting Sections");
+            errorAlert.showAndWait();
+            return null;
+        }
+        return sections;
+    } 
     public void initialize(){
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         sectionColumn.setCellValueFactory(new PropertyValueFactory<>("section"));
@@ -117,5 +136,6 @@ public class StudentsController{
         studentTable.setItems(Main.studentList);
         //sorting students by their registration number
         studentTable.getSortOrder().add(regNoColumn);
+        sectionComboBox.setItems(getAvailableSections());
     }
 }
