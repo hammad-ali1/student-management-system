@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Dec 15, 2021 at 02:59 PM
+-- Generation Time: Dec 18, 2021 at 01:07 PM
 -- Server version: 8.0.27
 -- PHP Version: 7.4.26
 
@@ -73,7 +73,6 @@ CREATE TABLE IF NOT EXISTS `section` (
 --
 
 INSERT INTO `section` (`name`, `course1`, `course2`, `course3`, `course4`) VALUES
-('FA18-BCS-C', 'MTH201', 'MTH101', 'PHY202', 'CSC501'),
 ('FA19-BCS-B', 'CSC501', 'CSC301', 'CSC302', 'PHY202'),
 ('FA20-BCS-A', 'CSC101', 'MTH101', 'MTH302', 'PHY202'),
 ('FA20-BCS-B', 'CSC101', 'MTH101', 'MTH302', 'PHY202');
