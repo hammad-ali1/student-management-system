@@ -121,7 +121,6 @@ public class SectionsController {
             Statement stmt = con.createStatement();
             String query = "SELECT code FROM courses";
             ResultSet result = stmt.executeQuery(query);
-            ResultSetMetaData data = result.getMetaData();
             while(result.next()){
                 String code = (String) result.getObject(1);
                 courses.add(code);
