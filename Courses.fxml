@@ -50,8 +50,8 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <TextField fx:id="courseCodeTextField" maxHeight="200.0" maxWidth="200.0" prefHeight="100.0" prefWidth="100.0" text="Course Code" />
-            <TextField fx:id="courseNameTextField" maxHeight="200.0" maxWidth="200.0" text="Course Name" GridPane.rowIndex="1" />
+            <TextField fx:id="courseCodeTextField" maxHeight="200.0" maxWidth="200.0" prefHeight="100.0" prefWidth="100.0" promptText="Course Code" />
+            <TextField fx:id="courseNameTextField" maxHeight="200.0" maxWidth="200.0" promptText="Course Name" GridPane.rowIndex="1" />
             <Button fx:id="addCourse" mnemonicParsing="false" onAction="#addCourseButtonPressed" text="Add Course" GridPane.rowIndex="2" />
          </children>
          <BorderPane.margin>
