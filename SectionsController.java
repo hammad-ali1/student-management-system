@@ -19,11 +19,11 @@ public class SectionsController {
     }
     //method to populate observable list with dummy values
     public static void populateSectionsList(ObservableList<Section> list){
-        try{
+        String query = "SELECT name, course1, course2, course3, course4 FROM section";
+        try(
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
             Statement stmt=con.createStatement();
-            String query = "SELECT name, course1, course2, course3, course4 FROM section";
-            ResultSet result = stmt.executeQuery(query);
+            ResultSet result = stmt.executeQuery(query)){
             while(result.next()){
                 String name = (String) result.getObject(1);
                 String course1 = (String) result.getObject(2);
@@ -67,9 +67,9 @@ public class SectionsController {
         String course3 = course3ComboBox.getValue();
         String course4 = course4ComboBox.getValue();
         Section newSection = new Section(name, course1, course2, course3, course4);
-        try{
+        try(
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
-            Statement stmt=con.createStatement();
+            Statement stmt=con.createStatement()){
             String query = String.format("INSERT INTO section (name, course1, course2, course3, course4) VALUES ('%s', '%s', '%s', '%s', '%s')", name, course1, course2, course3, course4);
             stmt.execute(query);
         }catch(SQLException e){
@@ -85,9 +85,9 @@ public class SectionsController {
     @FXML //event handler for deleting a record of section
     void deleteRecordButtonPressed(ActionEvent event) {
         Section deleteSection = sectionsTable.getSelectionModel().getSelectedItem();
-        try{
+        try(
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
-            Statement stmt=con.createStatement();
+            Statement stmt=con.createStatement()){
             String query = String.format("DELETE FROM section WHERE name = '%s' ", deleteSection.getName());
             stmt.execute(query);
         }catch(SQLException e){
@@ -116,11 +116,11 @@ public class SectionsController {
      }
     public ObservableList<String> getAvailableCourses(){
         ObservableList<String> courses = FXCollections.observableArrayList();
-        try{
+        String query = "SELECT code FROM courses";
+        try(
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
-            Statement stmt = con.createStatement();
-            String query = "SELECT code FROM courses";
-            ResultSet result = stmt.executeQuery(query);
+            Statement stmt = con.createStatement(); 
+            ResultSet result = stmt.executeQuery(query)){
             while(result.next()){
                 String code = (String) result.getObject(1);
                 courses.add(code);

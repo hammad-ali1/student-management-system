@@ -19,11 +19,11 @@ public class StudentsController{
     }
     //method to populate observable list with dummy values
     public static void populateStudentsList(ObservableList<Student> list){
-        try{
+        String query = "SELECT regNo, name, section, gpa FROM students";
+        try(
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
             Statement stmt=con.createStatement();
-            String query = "SELECT regNo, name, section, gpa FROM students";
-            ResultSet result = stmt.executeQuery(query);
+            ResultSet result = stmt.executeQuery(query)){
             while(result.next()){
                 String regNo = (String) result.getObject(1);
                 String name = (String) result.getObject(2);
@@ -60,9 +60,9 @@ public class StudentsController{
         String section = sectionComboBox.getValue();
         String gpa = gpaTextField.getText();
         Student newStudent = new Student(regNo, name, section, gpa);
-        try{
+        try(
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
-            Statement stmt=con.createStatement();
+            Statement stmt=con.createStatement()){
             String query = String.format("INSERT INTO students (regNo, name, section, gpa) VALUES ('%s', '%s', '%s', '%s')", regNo, name, section, gpa);
             stmt.execute(query);
         }catch(SQLException e){
@@ -78,9 +78,9 @@ public class StudentsController{
     @FXML //event handler for deleting a record of student
     void deleteRecordButtonPressed(ActionEvent event) {
         Student deleteStudent = studentTable.getSelectionModel().getSelectedItem();
-        try{
+        try(
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
-            Statement stmt=con.createStatement();
+            Statement stmt=con.createStatement()){
             String query = String.format("DELETE FROM students WHERE regNo = '%s' ", deleteStudent.getRegNo());
             stmt.execute(query);
         }catch(SQLException e){
@@ -109,10 +109,10 @@ public class StudentsController{
 
     public ObservableList<String> getAvailableSections(){
         ObservableList<String> sections = FXCollections.observableArrayList();
-        try{
+        String query = "SELECT name FROM section";
+        try(
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
-            Statement stmt = con.createStatement();
-            String query = "SELECT name FROM section";
+            Statement stmt = con.createStatement()){
             ResultSet result = stmt.executeQuery(query);
             while(result.next()){
                 String section = (String) result.getObject(1);

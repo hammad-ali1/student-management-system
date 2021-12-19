@@ -18,11 +18,11 @@ public class CoursesController {
     }
     //method to populate observable list with dummy values
     public static void populateStudentsList(ObservableList<Course> list){
-        try{
+        String query = "SELECT code, name FROM courses";
+        try(
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
             Statement stmt=con.createStatement();
-            String query = "SELECT code, name FROM courses";
-            ResultSet result = stmt.executeQuery(query);
+            ResultSet result = stmt.executeQuery(query)){            
             while(result.next()){
                 String code = (String) result.getObject(1);
                 String name = (String) result.getObject(2);
@@ -49,10 +49,9 @@ public class CoursesController {
         String code = courseCodeTextField.getText();
         String name = courseNameTextField.getText();
         Course newCourse = new Course(code , name);
-        try{
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
-            Statement stmt=con.createStatement();
-            String query = String.format("INSERT INTO courses (code, name) VALUES ('%s', '%s')", code, name);
+        String query = String.format("INSERT INTO courses (code, name) VALUES ('%s', '%s')", code, name);
+        try(Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
+        Statement stmt=con.createStatement()){
             stmt.execute(query);
         }catch(SQLException e){
             e.printStackTrace();
@@ -67,9 +66,9 @@ public class CoursesController {
     @FXML //event handler for deleting a record of course
     void deleteRecordButtonPressed(ActionEvent event) {
         Course deleteCourse = coursesTable.getSelectionModel().getSelectedItem();
-        try{
+        try(
             Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb","root","root");
-            Statement stmt=con.createStatement();
+            Statement stmt=con.createStatement()){
             String query = String.format("DELETE FROM courses WHERE code = '%s' ", deleteCourse.getCourseCode());
             stmt.execute(query);
         }catch(SQLException e){
